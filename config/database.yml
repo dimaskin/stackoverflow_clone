@@ -1,0 +1,15 @@
+default: &default
+  adapter: postgresql
+  host: localhost
+  user: postgres
+  password: '!111223@'
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: stackoverflow_clone_development
+
+test:
+  <<: *default
+  database: stackoverflow_clone_test
