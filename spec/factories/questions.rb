@@ -1,9 +1,10 @@
 FactoryBot.define do
   factory :question do
-    body { "MyText" }
+    title { "MyText" }
+    body  { "MyText" }
 
-    trait :invalid do
-      body { nil }
-    end
+    # trait :invalid do
+    #   body { nil }
+    # end
   end
 end
