@@ -22,6 +22,7 @@ class AnswersController < ApplicationController
   end
 
   def answer_param
+    #byebug
     params.require(:answer).permit(:body)
   end
 end
