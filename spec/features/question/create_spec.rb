@@ -15,7 +15,7 @@ feature 'User can create question' do
       fill_in 'Title', with: 'Test question'
       fill_in 'Body', with: 'Text text text'
       click_on 'Ask'
-      expect(page).to have_content 'Your question succefully created.'
+      expect(page).to have_content 'Your question successfully created.'
       expect(page).to have_content 'Test question'
       expect(page).to have_content 'Text text text'
     end

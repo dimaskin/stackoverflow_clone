@@ -1,1 +1,8 @@
-h1 hi
+= render 'shared/errors', resource: @question
+
+= form_with model: @uestion do |f|
+  f.label :title
+  f.text_field :title
+  f.label :body
+  f.test_area :body
+  f.submit 'Ask'
