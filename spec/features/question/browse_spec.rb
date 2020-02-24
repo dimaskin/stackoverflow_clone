@@ -1,12 +1,14 @@
 require 'rails_helper'
 
 feature 'User can browse all question' do
-  given!(:questions) { create_list :question, 3 }
+
+  given!(:user) {create :user}
+  given!(:user1) {create :user}
+  given!(:questions) {create_list :question, 5,  author: user}
 
   describe 'Authenticated user' do
-    given(:user) { create(:user) }
     scenario 'Can views all questions' do
-      #question
+      sign_in(user1)
       visit questions_path
 
       questions.each do |question|

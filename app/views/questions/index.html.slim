@@ -1,2 +1,4 @@
 h1 hi
-p = link_to 'Ask question', new_question_path
+= render @questions
+
+= link_to t('.create'), new_question_path

@@ -1,3 +1,13 @@
-h1 hi
-h1 = @question.title
-p  = @question.body
+dl
+  dt = t(:title)
+  dd = @question.title
+
+  dt = t(:body)
+  dd = @question.body
+
+- if current_user_owns? @question
+  div = link_to t(:delete), question_path(@question), method: :delete, data: { confirm: t(:sure?) }
+
+ul
+  = render @answers
+= render 'answers/form'

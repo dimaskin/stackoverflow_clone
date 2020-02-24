@@ -1,0 +1,6 @@
+- if answer.persisted?
+  li
+    = answer.body
+    - if current_user_owns? answer
+      |
+      = link_to t(:delete), answer, method: :delete

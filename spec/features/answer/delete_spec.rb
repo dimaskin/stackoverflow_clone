@@ -25,7 +25,8 @@ feature 'Delete answer' do
   scenario 'Author delete answer' do
     sign_in(answer_author)
     visit question_path(question)
-    click_on 'Delete answer'
+    #click_on 'Delete answer'
+    click_on I18n.t :delete
 
     expect(page).to have_no_content(answer.body)
   end

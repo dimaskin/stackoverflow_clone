@@ -1,8 +1,3 @@
-= render 'shared/errors', resource: @question
+= render 'shared/error', resource: @question
 
-= form_with model: @uestion do |f|
-  f.label :title
-  f.text_field :title
-  f.label :body
-  f.test_area :body
-  f.submit 'Ask'
+= render 'form'
