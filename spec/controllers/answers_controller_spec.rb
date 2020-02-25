@@ -82,7 +82,7 @@ RSpec.describe AnswersController, type: :controller do
 
       it 'deletes his question' do
         answer
-        expect { send_request }.to_not change(question.answers, :count)
+        expect { send_request }.to_not change(Answer, :count)
       end
     end
   end

@@ -18,15 +18,6 @@ feature 'Create answer for question' do
       expect(page).to have_content Answer.human_attribute_name(:body)
     end
 
-    scenario 'non-author tries to create a answer' do
-      sign_in(non_author)
-      visit question_path(question)
-      fill_in Answer.human_attribute_name(:body), with: answer_body
-      click_on I18n.t(:create, scope: 'answers.form')
-
-      expect(page).to have_content Answer.human_attribute_name(:body)
-    end
-
     scenario 'user tries to create a invalid answer' do
       sign_in(user)
       visit question_path(question)

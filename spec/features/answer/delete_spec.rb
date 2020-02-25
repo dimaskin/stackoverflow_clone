@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 feature 'Delete answer' do
+  
+  #have_link
 
   given(:user) { create :user }
   given(:question_author) { create :user }
@@ -12,14 +14,14 @@ feature 'Delete answer' do
     sign_in(user)
     visit question_path(question)
 
-    expect(page).to have_no_content 'Delete answer'
+    expect(page).to have_no_link 'Delete answer'
   end
 
   scenario "Question's author want to delete answer" do
     sign_in(question_author)
     visit question_path(question)
 
-    expect(page).to have_no_content 'Delete answer'
+    expect(page).to have_no_link 'Delete answer'
   end
 
   scenario 'Author delete answer' do
@@ -34,6 +36,6 @@ feature 'Delete answer' do
   scenario 'Non authenticated user want delete answer' do
     visit question_path(question)
 
-    expect(page).to have_no_content 'Delete answer'
+    expect(page).to have_no_link 'Delete answer'
   end
 end

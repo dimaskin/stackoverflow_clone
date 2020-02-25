@@ -54,7 +54,7 @@ class QuestionsController < ApplicationController
   end
 
   def check_author!
-    redirect_to question_path(@question) unless current_user.author? @question
+    redirect_to question_path(@question) unless current_user.author?(@question)
   end
 
 end
