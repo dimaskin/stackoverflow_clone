@@ -1,18 +1,23 @@
 class AnswersController < ApplicationController
-  before_action :load_question, only: [:create]
-
-  def new
-    @answer = Answer.new
-  end
+  before_action :authenticate_user!
+  before_action :load_question, only: :create
+  before_action :load_answer,   only: :destroy
+  before_action :check_answer_ownership!, only: :destroy
 
   def create
-    @answer = @question.answers.create(answer_param)
+    @answer = @question.answers.new(answers_params)
+    @answer.author = current_user
     if @answer.save
       redirect_to @question
     else
-      render :new
+      @answers = @question.answers
+      render 'questions/show'
     end
+  end
 
+  def destroy
+    @answer.destroy
+    redirect_to question_url(@answer.question)
   end
 
   private
@@ -21,8 +26,15 @@ class AnswersController < ApplicationController
     @question = Question.find(params[:question_id])
   end
 
-  def answer_param
-    #byebug
+  def load_answer
+    @answer = Answer.find(params[:id])
+  end
+
+  def answers_params
     params.require(:answer).permit(:body)
+  end
+
+  def check_answer_ownership!
+    redirect_to answer_path(@answer) unless current_user.author?(@answer)
   end
 end

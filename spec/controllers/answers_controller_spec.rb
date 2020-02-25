@@ -1,44 +1,90 @@
 require 'rails_helper'
 
 RSpec.describe AnswersController, type: :controller do
-  let(:question) { create(:question) }
+  let(:user)     { create :user }
+  let(:question) { create :question, author: create(:user) }
+  let(:answer)   { create :answer, question: question, author: user }
 
-  describe 'GET #new' do
-
-    before { get :new , params: { question_id: question }}
-    it 'assigns a new answer to @answer' do
-      expect(assigns(:answer)).to be_a_new(Answer)
-    end
-
-    it 'renders new view' do
-      expect(response).to render_template :new
-    end
-
-  end
 
   describe 'POST #create' do
-    context 'with valid attributes' do
-      it 'saves a new answer in the database' do
-        expect { post :create, params: {answer: attributes_for(:answer), question_id: question} }.to change(question.answers, :count).by(1)
+    let(:send_request) { post :create, params: { question_id: question.id, answer: attributes } }
+    let(:attributes) { attributes_for(:answer) }
+
+    context 'when signed in' do
+      before { login(user) }
+
+      context 'builded answer' do
+        before { send_request }
+
+        it 'have right owner' do
+          expect(assigns(:answer).author).to eq user
+        end
+
+        it 'have right question' do
+          expect(assigns(:answer).question_id).to eq question.id
+        end
       end
 
-      it 'redirects to show view' do
-        post :create, params: {answer: attributes_for(:answer), question_id: question}
-        expect(response).to redirect_to assigns(:question)
+      context 'when user is owner' do
+        context 'with valid attrs' do
+          it 'saves new answer' do
+            expect { send_request }.to change(question.answers, :count).by 1
+          end
+
+          it 'redirects to new answer' do
+            send_request
+            should redirect_to question_url(question)
+          end
+        end
+
+        context 'with invalid attrs' do
+          let(:attributes) { attributes_for(:invalid_answer) }
+
+          it 'does not save the answer' do
+            expect { send_request }.to_not change(Answer, :count)
+          end
+
+          it 're-renders new view' do
+            send_request
+            should render_template 'questions/show', id: question
+          end
+        end
       end
     end
 
-    context 'with invalid attributes' do
-      it 'doesnt save a new answer in the database' do
-        expect { post :create, params: {answer: attributes_for(:answer, :invalid), question_id: question} }.to_not change(Answer, :count)
+    context 'when user is not signed in' do
+      it 'should redirect to sign in' do
+        send_request
+        should redirect_to new_user_session_path
+      end
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    let(:answer_params) { { id: answer.id } }
+    let(:send_request) { delete :destroy, params: answer_params }
+
+    context 'when owner' do
+      before { login(user) }
+
+      it 'deletes his answer' do
+        answer
+        expect { send_request }.to change(Answer, :count).by(-1)
       end
 
-      it 're-renders new view' do
-        post :create, params: {answer: attributes_for(:answer, :invalid), question_id: question}
-        expect(response).to render_template :new
+      it 'redirects to question' do
+        send_request
+        should redirect_to question_url(answer.question)
       end
     end
 
+    context 'when not owner' do
+
+      it 'deletes his question' do
+        answer
+        expect { send_request }.to_not change(Answer, :count)
+      end
+    end
   end
 
 end
