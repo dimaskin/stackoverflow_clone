@@ -5,10 +5,9 @@ RSpec.describe AnswersController, type: :controller do
   let(:question) { create :question, author: create(:user) }
   let(:answer)   { create :answer, question: question, author: user }
 
-
   describe 'POST #create' do
-    
-  let(:attributes) { attributes_for(:answer) }
+
+    let(:attributes) { attributes_for(:answer) }
     let(:send_request)      { post :create, params: { question_id: question.id, answer: attributes } }
     let(:send_ajax_request) { post :create, params: { question_id: question.id, answer: attributes, format: :js } }
 
@@ -56,6 +55,7 @@ RSpec.describe AnswersController, type: :controller do
         it 'should respond_with 401' do
           send_ajax_request
           should respond_with 401
+        end
       end
     end
   end
@@ -85,5 +85,4 @@ RSpec.describe AnswersController, type: :controller do
       end
     end
   end
-
 end
