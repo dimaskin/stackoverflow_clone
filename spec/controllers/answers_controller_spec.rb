@@ -7,14 +7,16 @@ RSpec.describe AnswersController, type: :controller do
 
 
   describe 'POST #create' do
-    let(:send_request) { post :create, params: { question_id: question.id, answer: attributes } }
-    let(:attributes) { attributes_for(:answer) }
+    
+  let(:attributes) { attributes_for(:answer) }
+    let(:send_request)      { post :create, params: { question_id: question.id, answer: attributes } }
+    let(:send_ajax_request) { post :create, params: { question_id: question.id, answer: attributes, format: :js } }
 
     context 'when signed in' do
       before { login(user) }
 
       context 'builded answer' do
-        before { send_request }
+        before { send_ajax_request }
 
         it 'have right owner' do
           expect(assigns(:answer).author).to eq user
@@ -25,15 +27,10 @@ RSpec.describe AnswersController, type: :controller do
         end
       end
 
-      context 'when user is owner' do
+      context 'creating answer' do
         context 'with valid attrs' do
           it 'saves new answer' do
-            expect { send_request }.to change(question.answers, :count).by 1
-          end
-
-          it 'redirects to new answer' do
-            send_request
-            should redirect_to question_url(question)
+            expect { send_ajax_request }.to change(question.answers, :count).by 1
           end
         end
 
@@ -41,48 +38,50 @@ RSpec.describe AnswersController, type: :controller do
           let(:attributes) { attributes_for(:invalid_answer) }
 
           it 'does not save the answer' do
-            expect { send_request }.to_not change(Answer, :count)
-          end
-
-          it 're-renders new view' do
-            send_request
-            should render_template 'questions/show', id: question
+            expect { send_ajax_request }.to_not change(Answer, :count)
           end
         end
       end
     end
 
     context 'when user is not signed in' do
-      it 'should redirect to sign in' do
-        send_request
-        should redirect_to new_user_session_path
+      context 'with ajax request' do
+        it 'should redirect to sign in' do
+          send_request
+          should redirect_to new_user_session_url
+        end
+      end
+
+      context 'with normal request' do
+        it 'should respond_with 401' do
+          send_ajax_request
+          should respond_with 401
       end
     end
   end
 
   describe 'DELETE #destroy' do
     let(:answer_params) { { id: answer.id } }
-    let(:send_request) { delete :destroy, params: answer_params }
+    let(:send_ajax_request) { delete :destroy, params: answer_params, format: :js }
 
     context 'when owner' do
       before { login(user) }
 
       it 'deletes his answer' do
         answer
-        expect { send_request }.to change(Answer, :count).by(-1)
+        expect { send_ajax_request }.to change(Answer, :count).by(-1)
       end
 
       it 'redirects to question' do
-        send_request
-        should redirect_to question_url(answer.question)
+        send_ajax_request
+        should_not redirect_to question_url(answer.question)
       end
     end
 
     context 'when not owner' do
-
       it 'deletes his question' do
         answer
-        expect { send_request }.to_not change(Answer, :count)
+        expect { send_ajax_request }.to_not change(Answer, :count)
       end
     end
   end
