@@ -8,13 +8,13 @@ feature 'Create answer for question' do
   given(:answer_body) { attributes_for(:answer)[:body] }
 
   describe 'Authenticated user' do
-    scenario 'can create answer' do
+
+    scenario 'can create answer', js: true do
       sign_in(user)
       visit question_path(question)
       fill_in Answer.human_attribute_name(:body), with: answer_body
       click_on I18n.t(:create, scope: 'answers.form')
 
-      #expect(page).to have_content 'Your answer successfully created'
       expect(page).to have_content Answer.human_attribute_name(:body)
     end
 
@@ -22,8 +22,7 @@ feature 'Create answer for question' do
       sign_in(user)
       visit question_path(question)
       click_on I18n.t(:create, scope: 'answers.form')
-      expect(page).to have_content "Ваш ответ не может быть пустым"
-      #expect(page).to have_content `#{Answer.human_attribute_name(:body)} #{I18n.t('activerecord.errors.messages.blank')}`
+      expect(page).to have_content 'Ваш ответ не может быть пустым'
     end
   end
 
